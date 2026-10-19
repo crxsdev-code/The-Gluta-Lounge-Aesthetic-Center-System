@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Menu, X, Phone } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Menu, X, Phone, MapPin, ArrowUpRight } from 'lucide-react';
 import { scrollToSection } from '../lib/scroll';
 import logoBadge from '../assets/logo-badge.jpg';
 
@@ -13,11 +13,22 @@ const navLinks = [
 ];
 
 const PHONE_HREF = 'tel:09352056384';
+const PHONE_DISPLAY = '0935 205 6384';
+const ADDRESS =
+  'Unit 202 Vicars 1 Building, 31 Visayas Ave, corner Road 1, Vasra, Quezon City, Metro Manila';
+const GOOGLE_MAPS_LINK =
+  'https://www.google.com/maps/search/?api=1&query=The+Gluta+Lounge+%26+Aesthetic+Center+QC+Quezon+City';
+
+/** Stagger delay (ms) for the i-th drawer row when opening. 0 when closing. */
+const stagger = (open: boolean, i: number) => ({
+  transitionDelay: open ? `${170 + i * 55}ms` : '0ms',
+});
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
+  const closeBtnRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 24);
@@ -56,6 +67,7 @@ export default function Navbar() {
       if (e.key === 'Escape') setIsMobileMenuOpen(false);
     };
     window.addEventListener('keydown', onKey);
+    closeBtnRef.current?.focus();
     return () => window.removeEventListener('keydown', onKey);
   }, [isMobileMenuOpen]);
 
@@ -65,13 +77,14 @@ export default function Navbar() {
   };
 
   return (
-    <header
-      className={`fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,backdrop-filter] duration-500 ${
-        isScrolled || isMobileMenuOpen
-          ? 'bg-white/95 backdrop-blur-md shadow-[0_1px_24px_-8px_rgba(33,29,26,0.18)]'
-          : 'bg-transparent'
-      }`}
-    >
+    <>
+      <header
+        className={`fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,backdrop-filter] duration-500 ${
+          isScrolled || isMobileMenuOpen
+            ? 'bg-white/95 backdrop-blur-md shadow-[0_1px_24px_-8px_rgba(33,29,26,0.18)]'
+            : 'bg-transparent'
+        }`}
+      >
       <div className="container-lux">
         <div className="flex h-[72px] items-center justify-between lg:h-[84px]">
           <a
@@ -134,47 +147,156 @@ export default function Navbar() {
           </button>
         </div>
       </div>
-      {/* Mobile menu */}
+      </header>
+
+      {/* Mobile drawer — sibling of <header> so the header's backdrop-filter
+          cannot create a containing block for this fixed panel (that bug
+          collapsed the old menu to 0px height). */}
       <div
         id="mobile-menu"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Navigation menu"
         aria-hidden={!isMobileMenuOpen}
-        className={`fixed inset-x-0 bottom-0 top-[72px] z-40 bg-ivory transition-[opacity,transform] duration-500 ease-out lg:hidden ${
-          isMobileMenuOpen
-            ? 'pointer-events-auto translate-y-0 opacity-100'
-            : 'pointer-events-none -translate-y-3 opacity-0'
+        className={`fixed inset-0 z-[90] overflow-hidden transition-[visibility] duration-[450ms] lg:hidden ${
+          isMobileMenuOpen ? 'visible' : 'invisible'
         }`}
       >
-        <nav
-          className="container-lux flex h-full flex-col gap-1 overflow-y-auto py-8"
-          aria-label="Mobile"
+        {/* Scrim */}
+        <div
+          onClick={() => setIsMobileMenuOpen(false)}
+          className={`absolute inset-0 bg-charcoal/60 backdrop-blur-sm transition-opacity duration-[450ms] ${
+            isMobileMenuOpen ? 'opacity-100' : 'opacity-0'
+          }`}
+          aria-hidden="true"
+        />
+
+        {/* Panel */}
+        <aside
+          className={`absolute right-0 top-0 flex h-full w-[88%] max-w-[26rem] flex-col border-l border-gold/40 bg-ivory shadow-[-24px_0_60px_-30px_rgba(33,29,26,0.6)] transition-transform duration-[450ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+            isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
         >
-          {navLinks.map((link) => {
-            const isActive = activeSection === link.href.slice(1);
-            return (
+          {/* Panel header */}
+          <div className="flex shrink-0 items-center justify-between border-b border-champagne/60 px-6 py-4">
+            <a
+              href="#home"
+              onClick={(e) => handleNav(e, '#home')}
+              className="flex shrink-0 items-center gap-2.5"
+              aria-label="The Gluta Lounge & Aesthetic Center – QC, back to home"
+            >
+              <img
+                src={logoBadge}
+                alt=""
+                aria-hidden="true"
+                width={36}
+                height={36}
+                className="h-9 w-9 rounded-[6px] shadow-sm"
+              />
+              <span className="flex flex-col leading-none">
+                <span className="font-heading text-[17px] font-semibold text-charcoal">
+                  The Gluta Lounge
+                </span>
+                <span className="mt-[3px] font-body text-[7.5px] font-semibold uppercase tracking-[0.24em] text-muted">
+                  Aesthetic Center · QC
+                </span>
+              </span>
+            </a>
+            <button
+              ref={closeBtnRef}
+              type="button"
+              onClick={() => setIsMobileMenuOpen(false)}
+              aria-label="Close menu"
+              className="-mr-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-charcoal transition-colors hover:text-gold"
+            >
+              <X size={22} />
+            </button>
+          </div>
+
+          {/* Scrollable body */}
+          <nav
+            className="container-lux flex flex-1 flex-col overflow-y-auto py-5"
+            aria-label="Mobile"
+          >
+            {navLinks.map((link, i) => {
+              const isActive = activeSection === link.href.slice(1);
+              return (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={(e) => handleNav(e, link.href)}
+                  aria-current={isActive ? 'page' : undefined}
+                  style={stagger(isMobileMenuOpen, i)}
+                  className={`group flex min-h-[52px] items-center gap-3 border-b border-champagne/50 font-heading text-[27px] font-medium leading-tight transition-[opacity,transform,color] duration-500 ${
+                    isActive ? 'text-gold' : 'text-charcoal hover:text-gold'
+                  } ${
+                    isMobileMenuOpen
+                      ? 'translate-x-0 opacity-100'
+                      : 'translate-x-4 opacity-0'
+                  }`}
+                >
+                  <span
+                    aria-hidden="true"
+                    className={`h-px shrink-0 bg-gold transition-all duration-500 ${
+                      isActive ? 'w-7 opacity-100' : 'w-0 opacity-0'
+                    }`}
+                  />
+                  {link.label}
+                </a>
+              );
+            })}
+
+            <div style={stagger(isMobileMenuOpen, navLinks.length)}>
               <a
-                key={link.href}
-                href={link.href}
-                onClick={(e) => handleNav(e, link.href)}
-                aria-current={isActive ? 'page' : undefined}
-                className={`border-b border-champagne/50 py-4 font-heading text-[26px] font-medium transition-colors duration-300 ${
-                  isActive ? 'text-gold' : 'text-charcoal hover:text-gold'
+                href="#contact"
+                onClick={(e) => handleNav(e, '#contact')}
+                className={`btn btn-primary mt-7 w-full transition-[opacity,transform] duration-500 ${
+                  isMobileMenuOpen
+                    ? 'translate-x-0 opacity-100'
+                    : 'translate-x-4 opacity-0'
                 }`}
               >
-                {link.label}
+                Book an Appointment
               </a>
-            );
-          })}
-          <a href="#contact" onClick={(e) => handleNav(e, '#contact')} className="btn btn-primary mt-7 w-full">
-            Book an Appointment
-          </a>
-          <a
-            href={PHONE_HREF}
-            className="mt-4 flex min-h-[48px] items-center justify-center gap-2 font-body text-[13px] font-semibold uppercase tracking-[0.14em] text-charcoal/70"
-          >
-            <Phone size={15} /> 0935 205 6384
-          </a>
-        </nav>
+            </div>
+
+            <div
+              style={stagger(isMobileMenuOpen, navLinks.length + 1)}
+              className={`mt-6 space-y-4 border-t border-champagne/60 pt-5 transition-[opacity,transform] duration-500 ${
+                isMobileMenuOpen
+                  ? 'translate-x-0 opacity-100'
+                  : 'translate-x-4 opacity-0'
+              }`}
+            >
+              <a
+                href={PHONE_HREF}
+                className="flex min-h-[48px] items-center gap-3 font-body text-[15px] font-semibold text-charcoal transition-colors hover:text-gold"
+              >
+                <Phone size={16} strokeWidth={1.5} className="shrink-0 text-gold" aria-hidden="true" />
+                {PHONE_DISPLAY}
+              </a>
+              <div className="flex items-start gap-3">
+                <MapPin size={16} strokeWidth={1.5} className="mt-1 shrink-0 text-gold" aria-hidden="true" />
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.14em] text-muted">Address</p>
+                  <p className="mt-1 max-w-[20rem] break-words text-[13px] leading-relaxed text-charcoal/70">
+                    {ADDRESS}
+                  </p>
+                  <a
+                    href={GOOGLE_MAPS_LINK}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.1em] text-gold transition-colors hover:text-charcoal"
+                  >
+                    Get Directions
+                    <ArrowUpRight size={13} aria-hidden="true" />
+                  </a>
+                </div>
+              </div>
+            </div>
+          </nav>
+        </aside>
       </div>
-    </header>
+    </>
   );
 }
