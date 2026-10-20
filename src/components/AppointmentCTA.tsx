@@ -1,4 +1,7 @@
 import { Phone, MapPin } from 'lucide-react';
+import FacebookIcon from './FacebookIcon';
+
+const FACEBOOK_LINK = 'https://www.facebook.com/theglutaloungeph';
 
 const PHONE_DISPLAY = '0935 205 6384';
 const PHONE_HREF = 'tel:09352056384';
@@ -37,6 +40,15 @@ export default function AppointmentCTA() {
             >
               <MapPin size={15} strokeWidth={1.75} aria-hidden="true" />
               Get Directions
+            </a>
+            <a
+              href={FACEBOOK_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-outline"
+            >
+              <FacebookIcon size={15} />
+              Follow Us on Facebook
             </a>
           </div>
 

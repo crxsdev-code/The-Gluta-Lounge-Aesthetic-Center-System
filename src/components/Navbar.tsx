@@ -93,14 +93,19 @@ export default function Navbar() {
             className="flex shrink-0 items-center gap-2.5 lg:gap-3"
             aria-label="The Gluta Lounge & Aesthetic Center – QC, back to home"
           >
-            <img
-              src={logoBadge}
-              alt=""
-              aria-hidden="true"
-              width={40}
-              height={40}
-              className="h-10 w-10 rounded-[6px] shadow-sm lg:h-12 lg:w-12"
-            />
+            {/* Circular badge: bg-black matches the JPG's pure #000000 corners
+                seamlessly, and the image sits at 86% so the white hexagon
+                frame stays fully inside the circle (no corner clipping). */}
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-black shadow-sm lg:h-16 lg:w-16">
+              <img
+                src={logoBadge}
+                alt=""
+                aria-hidden="true"
+                width={40}
+                height={40}
+                className="h-[86%] w-[86%] object-contain"
+              />
+            </span>
             <span className="flex flex-col leading-none">
               <span className="font-heading text-[18px] font-semibold tracking-[0.01em] text-charcoal sm:text-[21px] lg:text-[26px]">
                 The Gluta Lounge
@@ -185,14 +190,16 @@ export default function Navbar() {
               className="flex shrink-0 items-center gap-2.5"
               aria-label="The Gluta Lounge & Aesthetic Center – QC, back to home"
             >
-              <img
-                src={logoBadge}
-                alt=""
-                aria-hidden="true"
-                width={36}
-                height={36}
-                className="h-9 w-9 rounded-[6px] shadow-sm"
-              />
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-black shadow-sm">
+                <img
+                  src={logoBadge}
+                  alt=""
+                  aria-hidden="true"
+                  width={36}
+                  height={36}
+                  className="h-[86%] w-[86%] object-contain"
+                />
+              </span>
               <span className="flex flex-col leading-none">
                 <span className="font-heading text-[17px] font-semibold text-charcoal">
                   The Gluta Lounge

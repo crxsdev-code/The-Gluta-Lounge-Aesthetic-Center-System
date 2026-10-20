@@ -1,6 +1,11 @@
-import { Phone, MapPin, ArrowUpRight } from 'lucide-react';
+import { Phone, Mail, MapPin, ArrowUpRight } from 'lucide-react';
 import { scrollToSection } from '../lib/scroll';
 import logoFull from '../assets/logo-full.png';
+import FacebookIcon from './FacebookIcon';
+
+const FACEBOOK_LINK = 'https://www.facebook.com/theglutaloungeph';
+const EMAIL = 'theglutaloungeph@gmail.com';
+const EMAIL_HREF = 'mailto:theglutaloungeph@gmail.com';
 
 const GOOGLE_MAPS_LINK =
   'https://www.google.com/maps/search/?api=1&query=The+Gluta+Lounge+%26+Aesthetic+Center+QC+Quezon+City';
@@ -47,6 +52,15 @@ export default function Footer() {
               personalized aesthetic treatments in a comfortable, welcoming
               environment built around your goals.
             </p>
+            {/* <a
+              href={FACEBOOK_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="The Gluta Lounge & Aesthetic Center on Facebook"
+              className="mt-5 inline-flex items-center justify-center transition-opacity hover:opacity-75"
+            >
+              <FacebookIcon size={32} />
+            </a> */}
           </div>
 
           {/* Quick links */}
@@ -81,6 +95,18 @@ export default function Footer() {
                   <p className="text-[10px] uppercase tracking-[0.14em] text-white/40">Phone</p>
                   <a href={PHONE_HREF} className="mt-0.5 block text-[15px] text-white/80 transition-colors hover:text-gold">
                     {PHONE_DISPLAY}
+                  </a>
+                </div>
+              </li>
+              <li className="flex items-start gap-3">
+                <Mail size={16} strokeWidth={1.5} className="mt-0.5 shrink-0 text-gold" aria-hidden="true" />
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.14em] text-white/40">Email</p>
+                  <a
+                    href={EMAIL_HREF}
+                    className="mt-0.5 block break-words text-[15px] text-white/80 transition-colors hover:text-gold"
+                  >
+                    {EMAIL}
                   </a>
                 </div>
               </li>
